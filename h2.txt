@@ -74,6 +74,7 @@ python3 main.py --token_level word-level \
                 --save_steps 56 \
                 --logging_steps 56 \
                 --epoch_phase1_threshold -1 \
+                --Number_frozen_block 11 \
                 --num_train_epochs 50 \
                 --tuning_metric mean_intent_slot \
                 --use_intent_context_attention \
