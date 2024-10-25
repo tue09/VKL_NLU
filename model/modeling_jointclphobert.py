@@ -10,10 +10,17 @@ class JointCLPhoBERT(RobertaPreTrainedModel):
     def __init__(self, config, args, intent_label_lst, slot_label_lst):
         super(JointCLPhoBERT, self).__init__(config)
         self.args = args
-        self.frozen_ = False
         self.num_intent_labels = len(intent_label_lst)
         self.num_slot_labels = len(slot_label_lst)
         self.roberta = RobertaModel(config)  # Load pretrained PhoBERT
+
+        self.roberta_1 = torch.nn.Sequential(
+            self.roberta.embeddings,
+            *self.roberta.encoder.layer[:8]  
+        )
+        self.roberta_2 = torch.nn.Sequential(
+            *self.roberta.encoder.layer[8:]  
+        )
 
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
 
@@ -39,7 +46,9 @@ class JointCLPhoBERT(RobertaPreTrainedModel):
         negative_input_ids=None, negative_attention_mask=None, negative_token_type_ids=None
     ):
         # Regular Joint Learning
-        outputs = self.roberta(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        #outputs = self.roberta(input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+        outputs_1 = self.roberta_1(input_ids)
+        outputs = self.roberta_2(outputs_1[0], attention_mask=attention_mask)
         sequence_output = outputs[0]
         pooled_output = outputs[1]  # [CLS] token representation
 
@@ -86,25 +95,16 @@ class JointCLPhoBERT(RobertaPreTrainedModel):
         # 3. Contrastive Loss (if enabled)
         if self.args.use_contrastive_learning and positive_input_ids is not None and negative_input_ids is not None:
             # Forward pass for positive and negative samples
-            if self.frozen_ == False:
-                with torch.no_grad(): 
-                    positive_outputs = self.roberta(
-                        positive_input_ids, attention_mask=positive_attention_mask, token_type_ids=positive_token_type_ids
-                    )
-                    negative_outputs = self.roberta(
-                        negative_input_ids, attention_mask=negative_attention_mask, token_type_ids=negative_token_type_ids
-                    )
-            else:
-                positive_outputs = self.roberta(
-                    positive_input_ids, attention_mask=positive_attention_mask, token_type_ids=positive_token_type_ids
-                )
-                negative_outputs = self.roberta(
-                    negative_input_ids, attention_mask=negative_attention_mask, token_type_ids=negative_token_type_ids
-                )
+            positive_outputs_1 = self.roberta_1(positive_input_ids)
+            positive_outputs = self.roberta_2(positive_outputs_1[0], attention_mask=positive_attention_mask)
+
+            negative_outputs_1 = self.roberta_1(negative_input_ids)
+            negative_outputs = self.roberta_2(negative_outputs_1[0], attention_mask=negative_attention_mask)
+
             '''positive_outputs = self.roberta(
                 positive_input_ids, attention_mask=positive_attention_mask, token_type_ids=positive_token_type_ids
-            )
-            negative_outputs = self.roberta(
+            )'''
+            '''negative_outputs = self.roberta(
                 negative_input_ids, attention_mask=negative_attention_mask, token_type_ids=negative_token_type_ids
             )'''
 
