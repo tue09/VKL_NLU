@@ -180,8 +180,11 @@ class Trainer(object):
                     loss_array = [intent_loss, slot_loss, contrastive_loss]
                     #grad_array = [grad_decomposer._get_total_grad(loss_) for loss_ in loss_array]
                     grad_array = []
+                    self.model.zero_grad()
                     grad_array.append(grad_decomposer._get_total_grad(intent_loss))
+                    self.model.zero_grad()
                     grad_array.append(grad_decomposer._get_total_grad(slot_loss))
+                    self.model.zero_grad()
                     grad_array.append(grad_decomposer._get_total_grad(contrastive_loss))
                     print(f"intent gradient shape = {grad_array[0].shape}")
                     print(f"slot gradient shape = {grad_array[1].shape}")
