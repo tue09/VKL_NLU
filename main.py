@@ -50,6 +50,7 @@ if __name__ == "__main__":
     parser.add_argument("--intent_label_file", default="intent_label.txt", type=str, help="Intent Label file")
     parser.add_argument("--slot_label_file", default="slot_label.txt", type=str, help="Slot Label file")
 
+    parser.add_argument("--Number_frozen_block", default=6, type=int, help="Number of block that are frozen in phase 2.")
     parser.add_argument("--epoch_phase1_threshold", default=50, type=int, help="Number of epoch for phase 1.")
     parser.add_argument('--task_num', type=int, help='number of tasks')
     parser.add_argument('--use_decompose', type=int, help='use Decompose')

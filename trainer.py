@@ -156,15 +156,26 @@ class Trainer(object):
                 loss, intent_loss, slot_loss, contrastive_loss = outputs[:4]
 
                 if (epoch <= self.args.epoch_phase1_threshold) or (self.args.use_MOO == 0):
-                    for param in self.model.roberta_1.parameters():
+                    '''for param in self.model.roberta.parameters():
+                        param.requires_grad = True'''
+                    for param in self.model.roberta.embeddings.parameters():
                         param.requires_grad = True
-                    
+
+                    for layer in self.model.roberta.encoder.layer[:self.args.Number_frozen_block]:
+                        for param in layer.parameters():
+                            param.requires_grad = True
                     if self.args.gradient_accumulation_steps > 1:
                         loss = loss / self.args.gradient_accumulation_steps
                     loss.backward()
                 else:
-                    for param in self.model.roberta_1.parameters():
+                    '''for param in self.model.roberta_1.parameters():
+                        param.requires_grad = False'''
+                    for param in self.model.roberta.embeddings.parameters():
                         param.requires_grad = False
+
+                    for layer in self.model.roberta.encoder.layer[:self.args.Number_frozen_block]:
+                        for param in layer.parameters():
+                            param.requires_grad = False
                     
                     loss_array = [intent_loss, slot_loss, contrastive_loss]
                     #grad_array = [grad_decomposer._get_total_grad(loss_) for loss_ in loss_array]
