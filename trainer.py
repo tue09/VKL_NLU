@@ -190,7 +190,7 @@ class Trainer(object):
                     print(f"slot gradient shape = {grad_array[1].shape}")
                     print(f"contrastive gradient shape = {grad_array[2].shape}")
                     max_size = max(grad.shape[0] for grad in grad_array)
-                    padded_grad_array = [torch.cat([grad, grad.new_zeros(max_size - grad.shape[0])]) for grad in grad_array]
+                    grad_array = [torch.cat([grad, grad.new_zeros(max_size - grad.shape[0])]) for grad in grad_array]
 
                     #total_grad = torch.cat(grad_array)
                     #grad_decomposer.remove_grad_buffer()
