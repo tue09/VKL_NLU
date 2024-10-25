@@ -167,7 +167,11 @@ class Trainer(object):
                         param.requires_grad = False
                     
                     loss_array = [intent_loss, slot_loss, contrastive_loss]
-                    grad_array = [grad_decomposer._get_total_grad(loss_) for loss_ in loss_array]
+                    #grad_array = [grad_decomposer._get_total_grad(loss_) for loss_ in loss_array]
+                    grad_array = []
+                    grad_array.append(grad_decomposer._get_total_grad(intent_loss))
+                    grad_array.append(grad_decomposer._get_total_grad(slot_loss))
+                    grad_array.append(grad_decomposer._get_total_grad(contrastive_loss))
                     #total_grad = torch.cat(grad_array)
                     #grad_decomposer.remove_grad_buffer()
                     #grad_decomposer.update_grad_buffer(total_grad)
