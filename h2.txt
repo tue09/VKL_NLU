@@ -66,12 +66,14 @@ python3 main.py --token_level word-level \
                   --seed 100 \
                   --use_MOO 1 \
                   --MOO_name PCGrad \
-                  --use_decompose 1\
-                  
+                  --task_num 3 \                
+                  --use_decompose 1 \
+                  --decompose_name SVD \
                   --do_train \
                   --do_eval \
                   --save_steps 56 \
                   --logging_steps 56 \
+                  --epoch_phase1_threshold -1 \
                   --num_train_epochs 50 \
                   --tuning_metric mean_intent_slot \
                   --use_intent_context_attention \
@@ -87,6 +89,8 @@ python3 main.py --token_level word-level \
                   --pretrained \
                   --pretrained_path Model_Hackathon/JointCLBERT-CRF_PhoBERTencoder/3e-5/0.6-0.2-0.2/100 \
                   --learning_rate 3e-5
+
+                  
 
 
 
