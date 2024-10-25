@@ -165,6 +165,7 @@ class Trainer(object):
                 else:
                     for param in self.model.roberta.parameters():
                         param.requires_grad = False
+                    self.model.frozen_ = False
                     
                     loss_array = [intent_loss, slot_loss, contrastive_loss]
                     #grad_array = [grad_decomposer._get_total_grad(loss_) for loss_ in loss_array]

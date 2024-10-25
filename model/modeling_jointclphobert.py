@@ -10,6 +10,7 @@ class JointCLPhoBERT(RobertaPreTrainedModel):
     def __init__(self, config, args, intent_label_lst, slot_label_lst):
         super(JointCLPhoBERT, self).__init__(config)
         self.args = args
+        self.frozen_ = False
         self.num_intent_labels = len(intent_label_lst)
         self.num_slot_labels = len(slot_label_lst)
         self.roberta = RobertaModel(config)  # Load pretrained PhoBERT
@@ -85,12 +86,27 @@ class JointCLPhoBERT(RobertaPreTrainedModel):
         # 3. Contrastive Loss (if enabled)
         if self.args.use_contrastive_learning and positive_input_ids is not None and negative_input_ids is not None:
             # Forward pass for positive and negative samples
-            positive_outputs = self.roberta(
+            if self.frozen_ == False:
+                with torch.no_grad(): 
+                    positive_outputs = self.roberta(
+                        positive_input_ids, attention_mask=positive_attention_mask, token_type_ids=positive_token_type_ids
+                    )
+                    negative_outputs = self.roberta(
+                        negative_input_ids, attention_mask=negative_attention_mask, token_type_ids=negative_token_type_ids
+                    )
+            else:
+                positive_outputs = self.roberta(
+                    positive_input_ids, attention_mask=positive_attention_mask, token_type_ids=positive_token_type_ids
+                )
+                negative_outputs = self.roberta(
+                    negative_input_ids, attention_mask=negative_attention_mask, token_type_ids=negative_token_type_ids
+                )
+            '''positive_outputs = self.roberta(
                 positive_input_ids, attention_mask=positive_attention_mask, token_type_ids=positive_token_type_ids
             )
             negative_outputs = self.roberta(
                 negative_input_ids, attention_mask=negative_attention_mask, token_type_ids=negative_token_type_ids
-            )
+            )'''
 
             # Normalize anchor, positive, and negative representations
             anchor_rep = F.normalize(pooled_output, p=2, dim=1)
