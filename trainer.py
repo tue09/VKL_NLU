@@ -186,9 +186,9 @@ class Trainer(object):
                     grad_array.append(grad_decomposer._get_total_grad(slot_loss))
                     self.model.zero_grad()
                     grad_array.append(grad_decomposer._get_total_grad(contrastive_loss))
-                    print(f"intent gradient shape = {grad_array[0].shape}")
+                    '''print(f"intent gradient shape = {grad_array[0].shape}")
                     print(f"slot gradient shape = {grad_array[1].shape}")
-                    print(f"contrastive gradient shape = {grad_array[2].shape}")
+                    print(f"contrastive gradient shape = {grad_array[2].shape}")'''
                     max_size = max(grad.shape[0] for grad in grad_array)
                     grad_array = [torch.cat([grad, grad.new_zeros(max_size - grad.shape[0])]) for grad in grad_array]
 
