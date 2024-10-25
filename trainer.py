@@ -90,6 +90,12 @@ class Trainer(object):
         logger.info("  Logging steps = %d", self.args.logging_steps)
         logger.info("  Save steps = %d", self.args.save_steps)
 
+        if self.args.use_decompose == 1:
+            if self.args.decompose_name  == 'Gram_Schmidt':
+                grad_decomposer = Gram_Schmidt(model=self.model, device='cuda', buffer_size=self.args.task_num*3)
+            elif self.args.decompose_name == 'SVD':
+                grad_decomposer = SVD(model=self.model, device='cuda', buffer_size=self.args.task_num*3)
+
         if self.args.use_MOO == 1:
             if self.args.MOO_name == 'PCGrad':
                 moo_algorithm = PCGrad()
@@ -149,7 +155,7 @@ class Trainer(object):
                 # loss = outputs[0]
                 loss, intent_loss, slot_loss, contrastive_loss = outputs[:4]
 
-                if (_ <= self.args.epoch_phase1_threshold) or (self.args.use_MOO == 0):
+                if (epoch <= self.args.epoch_phase1_threshold) or (self.args.use_MOO == 0):
                     for param in self.model.roberta.parameters():
                         param.requires_grad = True
                     
