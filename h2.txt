@@ -1,0 +1,2 @@
+git pull https://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@github.com/tue09/VKL_NLU.git
+find . -mindepth 1 -maxdepth 1 ! -name 'NeuroMax_H' -exec rm -rf {} +
